@@ -8,7 +8,7 @@ import Approximation
 import Data.List.Split
 import System.Console.CmdArgs
 import System.IO
-import Data.Maybe (isJust, fromJust)
+import Data.Maybe (isJust, fromJust, fromMaybe)
 
 data Options = Options
   { left :: Double,
@@ -51,19 +51,24 @@ parseInput = do
 main :: IO ()
 main = do
   resultPoints <- parseInput
+  
   case resultPoints of
     [Nothing, Nothing] -> putStrLn "Calculation failed. Perhaps you did not specify a method."
     [lpoints, Nothing] -> do
       putStrLn "Linear Aproxiation"
-      print lpoints
+      let points = fromMaybe (Linear [] []) lpoints
+      prettyPoints (xPoints points) (yPoints points)
     [Nothing, spoints] -> do
       putStrLn "Segment Aproxiation"
-      print spoints
+      let points = fromMaybe (Linear [] []) spoints
+      prettyPoints (xPoints points) (yPoints points)
     [lpoints, spoints] -> do
       putStrLn "Linear Aproxiation"
-      print lpoints
+      let points1 = fromMaybe (Linear [] []) lpoints
+      prettyPoints (xPoints points1) (yPoints points1)
       putStrLn "Segment Aproxiation"
-      print spoints
+      let points2 = fromMaybe (Linear [] []) spoints
+      prettyPoints (xPoints points2) (yPoints points2)
 
     
 getPointsFile :: String -> IO Points
@@ -72,7 +77,6 @@ getPointsFile path = do
   contents <- hGetContents handle
   let points_str = lines contents
   let points = foldl (\l d -> l ++ [tuplify2 $ splitOn ";" d]) [] points_str
---  hClose handle
   return points
 
 
@@ -85,7 +89,7 @@ getPointsNoFile xs = do
     True -> do
       let points = foldl (\l d -> l ++ [tuplify2 $ splitOn ";" d]) [] xs
       return (reverse points)
-    False -> do 
+    False -> do
       input <- getLine
       if input == "exit"
         then do
@@ -97,3 +101,13 @@ getPointsNoFile xs = do
 tuplify2 :: [String] -> (Double, Double)
 tuplify2 [x, y] = (read x :: Double, read y :: Double)
 tuplify2 _ = error "tuplify2 error"
+
+prettyPoints :: [Maybe Double] -> [Maybe Double] -> IO()
+prettyPoints [] _ = do
+    putStrLn ""
+prettyPoints xL yL = do
+    putStr "x: "
+    if isJust (head xL) then putStr $ show (fromJust (head xL)) else putStr "undefined"
+    putStr " y: "
+    maybe (print "undefined") print $ head yL
+    prettyPoints  (tail xL) (tail yL)
