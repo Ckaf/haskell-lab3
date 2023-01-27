@@ -14,3 +14,35 @@ x: 7.6499999999999995 y: 8.649999999999999
 x: 8.6 y: 9.6
 x: 9.549999999999999 y: "undefined"
 
+"Enter a point in the format: x;y"
+"Enter a point in the format: x;y"
+"Enter a point in the format: x;y"
+"Enter a point in the format: x;y"
+Segment Aproxiation
+x: 1.0 y: "undefined"
+x: 1.95 y: 2.95
+x: 2.9 y: 3.9
+x: 3.8499999999999996 y: 4.85
+x: 4.8 y: 5.8
+x: 5.75 y: 6.75
+x: 6.699999999999999 y: 7.699999999999998
+x: 7.6499999999999995 y: 8.649999999999999
+x: 8.6 y: 9.6
+x: 9.549999999999999 y: "undefined"
+
+"Enter a point in the format: x;y"
+"Enter a point in the format: x;y"
+"Enter a point in the format: x;y"
+"Enter a point in the format: x;y"
+Linear Aproxiation
+x: 1.0 y: 2.0
+x: 1.95 y: 2.95
+x: 2.9 y: 3.9
+x: 3.8499999999999996 y: 4.85
+x: 4.8 y: 5.8
+x: 5.75 y: 6.75
+x: 6.699999999999999 y: 7.699999999999999
+x: 7.6499999999999995 y: 8.649999999999999
+x: 8.6 y: 9.6
+x: 9.549999999999999 y: 10.549999999999999
+
