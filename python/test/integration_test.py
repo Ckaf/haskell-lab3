@@ -25,7 +25,7 @@ def test_3():
     assert(res == expected)
 
 def test_4():
-    stream = os.popen('haskell-lab3-exe --left 1 --right 10 --sm --file \"./data/points\"')
+    stream = os.popen('haskell-lab3-exe --left 1 --right 10 --sm --file \"./python/test/data/points\"')
     res = stream.read()
     file = open("./python/test/data/expected_result4.txt", "r")
     expected = file.read()
