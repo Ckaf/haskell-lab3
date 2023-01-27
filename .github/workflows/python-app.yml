@@ -38,4 +38,5 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
+        cabal build haskell-lab3-exe
         pytest ./python/test/integration_test.py
