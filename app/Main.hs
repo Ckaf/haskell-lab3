@@ -45,15 +45,14 @@ parseInput = do
   points <- case file input of
                   "" -> getPointsNoFile []
                   path -> getPointsFile path
-           
-  return $ calculatePoints (left input, right input) 0.95 points (lm input) (sm input) 
-  
+
+  return $ calculatePoints (left input, right input) 0.95 points (lm input) (sm input)
+
 main :: IO ()
 main = do
   resultPoints <- parseInput
-  
+
   case resultPoints of
-    [Nothing, Nothing] -> putStrLn "Calculation failed. Perhaps you did not specify a method."
     [lpoints, Nothing] -> do
       putStrLn "Linear Aproxiation"
       let points = fromMaybe (Linear [] []) lpoints
@@ -69,8 +68,9 @@ main = do
       putStrLn "Segment Aproxiation"
       let points2 = fromMaybe (Linear [] []) spoints
       prettyPoints (xPoints points2) (yPoints points2)
+    _ -> putStrLn "Calculation failed. Perhaps you did not specify a method."
 
-    
+
 getPointsFile :: String -> IO Points
 getPointsFile path = do
   handle <- openFile path ReadMode
@@ -96,7 +96,7 @@ getPointsNoFile xs = do
           let points = foldl (\l d -> l ++ [tuplify2 $ splitOn ";" d]) [] xs
           return (reverse points)
         else getPointsNoFile (input : xs)
-    
+
 
 tuplify2 :: [String] -> (Double, Double)
 tuplify2 [x, y] = (read x :: Double, read y :: Double)
