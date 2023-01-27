@@ -26,7 +26,6 @@ source-repository head
 library
   exposed-modules:
       Approximation
-      Lib
   other-modules:
       Paths_haskell_lab3
   hs-source-dirs:
@@ -61,7 +60,8 @@ test-suite haskell-lab3-test
       test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      HUnit
+    , base >=4.7 && <5
     , cmdargs
     , haskell-lab3
     , split
