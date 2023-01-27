@@ -46,7 +46,4 @@ jobs:
     - name: Run tests
       run: cabal test all
     - name: Run python tests
-      run: |
-        export BIN_PATH=cabal exec which haskell-lab3-exe
-        cp $BIN_PATH haskell-lab3-exe
-        pytest ./python/test/integration_test.py
+      run: pytest ./python/test/integration_test.py
