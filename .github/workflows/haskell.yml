@@ -46,4 +46,4 @@ jobs:
     - name: Run tests
       run: cabal test all
     - name: Run python tests
-      run: pytest /python/test/integration_test.py
+      run: pytest ./python/test/integration_test.py
