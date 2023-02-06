@@ -3,7 +3,7 @@ import pytest
 import os
 
 def path_to_bin():
-    stream = os.popen('stack exec which haskell-lab3-exe')
+    stream = os.popen('cabal exec which haskell-lab3-exe')
     bin_p = stream.read()
     bin_p = bin_p.replace('\n', '')
     return bin_p
