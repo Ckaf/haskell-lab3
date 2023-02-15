@@ -68,11 +68,40 @@ o o o o o o . . x x x
 
 ### Использованные алгоритмы:
 - аппроксимация отрезками
+``` haskell
+segmentApproximation :: Interval -> Double -> Points -> CalculatedPoints
+segmentApproximation interval step list =
+    let
+        left = fst interval
+        right = snd interval
+        xList = getXList list
+        yList = getYList list
+        generatedX = calculatedX left right step
+        generatedY = map (\mx -> mx >>= \x -> toLower x xList >>= \y -> toUpper x xList >>= \z ->calcForSegment x y z xList yList) generatedX
+    in
+        Segment generatedX generatedY
+```
 - линейная аппроксимация
+``` haskell
+linearApproximation :: Interval -> Double -> Points -> CalculatedPoints
+linearApproximation interval step list =
+    let
+        left = fst interval
+        right = snd interval
+        xList = getXList list
+        yList = getYList list
+        xxList = map (\x -> x*x) xList
+        xyList = zipWith (*) xList yList
 
+        coefficients = calcLinearCoefficients xList xxList yList xyList
+        generatedX = calculatedX left right step
+        generatedY = map (\mx -> mx >>= \x -> return $ fst coefficients * x + snd coefficients) generatedX
+    in
+        Linear generatedX generatedY
+```
 ### Пример вывода программы:
 
-```
+``` text
 Segment Aproxiation
 x: 1.0 y: "undefined"
 x: 1.95 y: 2.95
