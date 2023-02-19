@@ -6,9 +6,9 @@ module Main (main) where
 
 import Approximation
 import Data.List.Split
+import Data.Maybe (fromJust, fromMaybe, isJust)
 import System.Console.CmdArgs
 import System.IO
-import Data.Maybe (isJust, fromJust, fromMaybe)
 
 data Options = Options
   { left :: Double,
@@ -38,38 +38,33 @@ calculatePoints interval step points True False = [Just (linearApproximation int
 calculatePoints interval step points False True = [Nothing, Just (segmentApproximation interval step points)]
 calculatePoints _ _ _ False False = [Nothing, Nothing]
 
-
-parseInput :: IO [Maybe CalculatedPoints]
-parseInput = do
-  input <- cmdArgs inputOptions
-  points <- case file input of
-                  "" -> getPointsNoFile []
-                  path -> getPointsFile path
-
-  return $ calculatePoints (left input, right input) 0.95 points (lm input) (sm input)
+printResult :: [Maybe CalculatedPoints] -> IO ()
+printResult [lpoints, Nothing] = do
+  putStrLn "Linear Aproxiation"
+  let points = fromMaybe (Linear [] []) lpoints
+  prettyPoints (xPoints points) (yPoints points)
+printResult [Nothing, spoints] = do
+  putStrLn "Segment Aproxiation"
+  let points = fromMaybe (Linear [] []) spoints
+  prettyPoints (xPoints points) (yPoints points)
+printResult [lpoints, spoints] = do
+  putStrLn "Linear Aproxiation"
+  let points1 = fromMaybe (Linear [] []) lpoints
+  prettyPoints (xPoints points1) (yPoints points1)
+  putStrLn "Segment Aproxiation"
+  let points2 = fromMaybe (Linear [] []) spoints
+  prettyPoints (xPoints points2) (yPoints points2)
+printResult _ = putStrLn "Calculation failed. Perhaps you did not specify a method."
 
 main :: IO ()
 main = do
-  resultPoints <- parseInput
-
-  case resultPoints of
-    [lpoints, Nothing] -> do
-      putStrLn "Linear Aproxiation"
-      let points = fromMaybe (Linear [] []) lpoints
-      prettyPoints (xPoints points) (yPoints points)
-    [Nothing, spoints] -> do
-      putStrLn "Segment Aproxiation"
-      let points = fromMaybe (Linear [] []) spoints
-      prettyPoints (xPoints points) (yPoints points)
-    [lpoints, spoints] -> do
-      putStrLn "Linear Aproxiation"
-      let points1 = fromMaybe (Linear [] []) lpoints
-      prettyPoints (xPoints points1) (yPoints points1)
-      putStrLn "Segment Aproxiation"
-      let points2 = fromMaybe (Linear [] []) spoints
-      prettyPoints (xPoints points2) (yPoints points2)
-    _ -> putStrLn "Calculation failed. Perhaps you did not specify a method."
-
+  input <- cmdArgs inputOptions
+  case file input of
+    "" -> noFileCalculate input []
+    path -> do
+      p <- getPointsFile path
+      let r = calculatePoints (left input, right input) 0.95 p (lm input) (sm input)
+      printResult r
 
 getPointsFile :: String -> IO Points
 getPointsFile path = do
@@ -79,35 +74,39 @@ getPointsFile path = do
   let points = foldl (\l d -> l ++ [tuplify2 $ splitOn ";" d]) [] points_str
   return points
 
-
-getPointsNoFile :: [String] -> IO Points
+getPointsNoFile :: Points -> IO Points
 getPointsNoFile xs = do
   -- getting user input
   print "Enter a point in the format: x;y"
   end <- isEOF
   case end of
-    True -> do
-      let points = foldl (\l d -> l ++ [tuplify2 $ splitOn ";" d]) [] xs
-      return (reverse points)
+    True -> return []
     False -> do
       input <- getLine
       if input == "exit"
-        then do
-          let points = foldl (\l d -> l ++ [tuplify2 $ splitOn ";" d]) [] xs
-          return (reverse points)
-        else getPointsNoFile (input : xs)
+        then return []
+        else return $ xs ++ [tuplify2 $ splitOn ";" input]
 
+noFileCalculate :: Options -> Points -> IO ()
+noFileCalculate ops ps = do
+  new_ps <- getPointsNoFile ps
+  case new_ps of
+    [] -> return ()
+    _ -> do
+      let r = calculatePoints (left ops, right ops) 0.95 new_ps (lm ops) (sm ops)
+      printResult r
+      noFileCalculate ops new_ps
 
 tuplify2 :: [String] -> (Double, Double)
 tuplify2 [x, y] = (read x :: Double, read y :: Double)
 tuplify2 _ = error "tuplify2 error"
 
-prettyPoints :: [Maybe Double] -> [Maybe Double] -> IO()
+prettyPoints :: [Maybe Double] -> [Maybe Double] -> IO ()
 prettyPoints [] _ = do
-    putStrLn ""
+  putStrLn ""
 prettyPoints xL yL = do
-    putStr "x: "
-    if isJust (head xL) then putStr $ show (fromJust (head xL)) else putStr "undefined"
-    putStr " y: "
-    maybe (print "undefined") print $ head yL
-    prettyPoints  (tail xL) (tail yL)
+  putStr "x: "
+  if isJust (head xL) then putStr $ show (fromJust (head xL)) else putStr "undefined"
+  putStr " y: "
+  maybe (print "undefined") print $ head yL
+  prettyPoints (tail xL) (tail yL)
