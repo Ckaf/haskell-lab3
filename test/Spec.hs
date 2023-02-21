@@ -6,7 +6,7 @@ main = runTestTTAndExit tests
 
 truncate' :: Maybe Double -> Int -> Maybe Double
 truncate' Nothing _ = Nothing
-truncate' (Just x) n = Just $ fromIntegral (round (x * t)) / t
+truncate' (Just x) n = Just $ fromIntegral (round (x * t):: Integer) / t
   where
     t = 10 ^ n
 
