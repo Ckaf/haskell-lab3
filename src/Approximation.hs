@@ -41,13 +41,14 @@ calculatedX left right step =
       output = map Just generated
    in output
 
-toLower :: Double -> [Double] -> Maybe Double
-toLower _ [] = Nothing
-toLower val (x : xs) = if val > x && isNothing (toLower val xs) then Just x else toLower val xs
+findClosestLeft :: Double -> [Double] -> Maybe Double
+findClosestLeft _ [] = Nothing
+findClosestLeft val (x : xs) = if val > x && isNothing r then Just x else r
+  where r = findClosestLeft val xs
 
-toUpper :: Double -> [Double] -> Maybe Double
-toUpper _ [] = Nothing
-toUpper val (x : xs) = if x >= val then Just x else toUpper val xs
+findClosestRight :: Double -> [Double] -> Maybe Double
+findClosestRight _ [] = Nothing
+findClosestRight val (x : xs) = if x >= val then Just x else findClosestRight val xs
 
 linearApproximation :: Interval -> Double -> Points -> CalculatedPoints
 linearApproximation interval step list =
@@ -76,7 +77,7 @@ segmentApproximation interval step list =
       xList = getXList list
       yList = getYList list
       generatedX = calculatedX left right step
-      generatedY = map (\mx -> mx >>= \x -> toLower x xList >>= \y -> toUpper x xList >>= \z -> calcForSegment x y z xList yList) generatedX
+      generatedY = map (\mx -> mx >>= \x -> findClosestLeft x xList >>= \y -> findClosestRight x xList >>= \z -> calcForSegment x y z xList yList) generatedX
    in Segment generatedX generatedY
 
 getXList :: Points -> [Double]
