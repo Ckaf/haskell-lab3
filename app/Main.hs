@@ -79,9 +79,8 @@ getPointsNoFile xs = do
   -- getting user input
   print "Enter a point in the format: x;y"
   end <- isEOF
-  case end of
-    True -> return []
-    False -> do
+  if end then return []
+    else do
       input <- getLine
       if input == "exit"
         then return []
