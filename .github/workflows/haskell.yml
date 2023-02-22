@@ -47,3 +47,18 @@ jobs:
       run: cabal test all
     - name: Run python tests
       run: pytest ./python/test/integration_test.py
+
+  lint-tools:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: 'Set up HLint'
+      uses: rwe/actions-hlint-setup@v1
+      with:
+        version: '3.1.6'
+
+    - name: 'Run HLint'
+      uses: rwe/actions-hlint-run@v2
+      with:
+        path: ./
+        fail-on: warning 
